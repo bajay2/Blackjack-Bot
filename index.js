@@ -20,7 +20,7 @@ client.on('interactionCreate', async interaction => {
 	if (interaction.isCommand()) {
 
 		const command = client.commands.get(interaction.commandName);
-
+		
 		if (!command) return;
 
 		try {
@@ -45,9 +45,9 @@ client.on('interactionCreate', async interaction => {
 						.setStyle('DANGER'),
 				);
 				if(!blackjack.isGameOver()) {
-					await interaction.reply({ content: hit, components: [row] })
+					await interaction.update({ content: hit, components: [row] })
 				} else {
-					await interaction.reply({ content: hit })
+					await interaction.update({ content: hit })
 				}
 
 			} else if (interaction.customId.includes('stand')) {
@@ -63,9 +63,9 @@ client.on('interactionCreate', async interaction => {
 						.setStyle('DANGER'),
 				);
 				if(!blackjack.isGameOver()) {
-					await interaction.reply({ content: stand, components: [row] })
+					await interaction.update({ content: stand, components: [row] })
 				} else {
-					await interaction.reply({ content: stand })
+					await interaction.update({ content: stand })
 				}
 			}
 		}

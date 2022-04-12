@@ -15,7 +15,7 @@ const numValues = {
     "K": 10
 }
 
-var userID, gameOver, userBalance, bet, userHand, dealerHand, userSum, dealerSum, deckS;
+var userID, gameOver, userBalance, bet, userHand, dealerHand, userSum, dealerSum, deck, winnings;
 
 //TODO: Fix issue where buttons are still placed after a blackjack
 function initGame (ID, balance, betAmt) {
@@ -34,7 +34,8 @@ function initGame (ID, balance, betAmt) {
 
     if (userSum == 21) {
         gameOver = true;
-        return outputScore() + 'BLACKJACK\nYou win';
+        winnings = Math.round(bet * 1.5);
+        return outputScore() + 'BLACKJACK (Bet * 1.5)\nYou win: ' + winnings.toString() + '\nYou now have: ';
     }
 
     return outputScore();
@@ -87,7 +88,8 @@ function userHit () {
     userSum = getSum(userHand);
     if(userSum > 21) {
         gameOver = true;
-        return outputScore() + 'BUST\nYou lose';
+        winnings = -bet;
+        return outputScore() + 'BUST\nYou lost ' + bet.toString() + '\nYou now have: ';
     } else if (userSum == 21) {
         let dealer = dealerHit()
         return outputScore() + dealer;
@@ -140,13 +142,17 @@ function getSum (hand) {
 function gameResults () {
     gameOver = true;
     if (dealerSum > 21) {
-        return 'Dealer bust. You win!';
+        winnings = bet;
+        return 'Dealer bust. \nYou win: ' + winnings.toString() + '\nYou now have: ';
     } else if (dealerSum > userSum) {
-        return 'you lose';
+        winnings = -bet;
+        return 'You lost ' + bet.toString() + '\nYou now have: ';;
     } else if (dealerSum < userSum) {
-        return 'you win';
+        winnings = bet;
+        return 'You win: ' + winnings.toString() + '\nYou now have: ';
     } else {
-        return 'push';
+        winnings = 0;
+        return 'Push.\nYou win: 0\nYou now have: ';
     }
 }
 
