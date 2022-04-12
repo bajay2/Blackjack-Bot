@@ -25,6 +25,11 @@ module.exports = {
 				.setLabel('Stand')
 				.setStyle('DANGER'),
 		);
-        await interaction.reply({ content: score, components: [row] });
+        //Don't place buttons if user gets blackjack
+        if(!blackjack.isGameOver()) {
+            await interaction.reply({ content: score, components: [row] });
+        } else {
+            await interaction.reply({ content: score, components: [] });
+        }
 	},
 };

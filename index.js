@@ -47,7 +47,7 @@ client.on('interactionCreate', async interaction => {
 				if(!blackjack.isGameOver()) {
 					await interaction.update({ content: hit, components: [row] })
 				} else {
-					await interaction.update({ content: hit })
+					await interaction.update({ content: hit, components: []})
 				}
 
 			} else if (interaction.customId.includes('stand')) {
@@ -65,7 +65,7 @@ client.on('interactionCreate', async interaction => {
 				if(!blackjack.isGameOver()) {
 					await interaction.update({ content: stand, components: [row] })
 				} else {
-					await interaction.update({ content: stand })
+					await interaction.update({ content: stand, components: [] })
 				}
 			}
 		}
