@@ -2,6 +2,8 @@ const fs = require('node:fs');
 const { Client, Intents, Collection, MessageActionRow, MessageButton } = require('discord.js');
 const { token } = require('./config.json');
 const blackjack = require('./blackjack');
+var pool = require ('./db.js');
+
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
 client.commands = new Collection();
