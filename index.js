@@ -29,9 +29,6 @@ client.on('ready', () => {
 
 client.on('interactionCreate', async interaction => {
 	if (interaction.isCommand()) {
-		if(interaction.commandName == 'blackjack') {
-			
-		}
 		const command = client.commands.get(interaction.commandName);
 		
 		if (!command) return;
@@ -63,6 +60,7 @@ client.on('interactionCreate', async interaction => {
 					pool.connect()
 						.then((client) => {
 							client.query(`update users set balance=($1) where id=($2)`,[hit[1],interaction.user.id])
+							client.release();
 						})
 						.catch(err => {
 							console.error(err);
@@ -72,24 +70,26 @@ client.on('interactionCreate', async interaction => {
 
 			} else if (interaction.customId.includes('stand')) {
 				let stand = blackjack.stand();
-				const row = new MessageActionRow().addComponents(
-					new MessageButton()
-						.setCustomId('hit-button')
-						.setLabel('Hit')
-						.setStyle('SUCCESS'),
-					new MessageButton()
-						.setCustomId('stand-button')
-						.setLabel('Stand')
-						.setStyle('DANGER'),
-				);
 				pool.connect()
 						.then((client) => {
 							client.query(`update users set balance=($1) where id=($2)`,[stand[1],interaction.user.id])
+							client.release();
 						})
 						.catch(err => {
 							console.error(err);
 						});
 				await interaction.update({ content: stand[0], components: [] })
+			} else if (interaction.customId.includes('double')) {
+				let double = blackjack.double();
+				pool.connect()
+						.then((client) => {
+							client.query(`update users set balance=($1) where id=($2)`,[double[1],interaction.user.id])
+							client.release();
+						})
+						.catch(err => {
+							console.error(err);
+						});
+				await interaction.update({ content: double[0], components: [] })
 			}
 		}
 	}

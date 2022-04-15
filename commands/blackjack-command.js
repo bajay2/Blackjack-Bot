@@ -3,10 +3,11 @@ const { MessageActionRow, MessageButton } = require('discord.js');
 const blackjack = require('../blackjack');
 var pool = require ('../db.js');
 var balance;
+var greet = '';
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('blackjack')
+        .setName('blackjack')
 		.setDescription('Play a hand of blackjack')
         .addIntegerOption(option =>
             option
@@ -22,13 +23,15 @@ module.exports = {
                         if(res.rows == 0) {
                             client.query('insert into users (id, balance) values ($1, 100)',
                             [interaction.user.id], (err, res) => {  
-                                console.log("Welcome. You've been given a balance of 100 to gamble");
+                                greet = 'Welcome! You have been given a balance of 100 to play with.\n';
+                                client.release()
                                 game();
                             });
                         }else {
                             client.query('select balance from users where id = $1',
                             [interaction.user.id], (err, res) => {  
                                 balance = res.rows[0].balance;
+                                client.release()
                                 game();
                             });
                         }
@@ -56,12 +59,24 @@ module.exports = {
                         .setCustomId('stand-button')
                         .setLabel('Stand')
                         .setStyle('DANGER'),
+                    new MessageButton()
+                        .setCustomId('double-button')
+                        .setLabel('2x')
+                        .setStyle('PRIMARY'),
                 );
                 //Don't place buttons if user gets blackjack
                 if(!blackjack.isGameOver()) {
-                    interaction.reply({ content: score, components: [row] });
+                    interaction.reply({ content: greet + score, components: [row] });
                 } else {
-                    interaction.reply({ content: score[0], components: [] });
+                    pool.connect()
+						.then((client) => {
+							client.query(`update users set balance=($1) where id=($2)`,[score[1],interaction.user.id])
+                            client.release();
+						})
+						.catch(err => {
+							console.error(err);
+						});
+                    interaction.reply({ content: greet + score[0], components: [] });
                 }
             }
         }

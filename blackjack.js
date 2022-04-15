@@ -1,10 +1,11 @@
 var userID, gameOver, userBalance, bet, userHand, dealerHand, userSum, dealerSum, deck, userBust, dealerBust;
 var winnings = 0;
+var dbl;
 
 function initGame (balance, betAmt) {
     bal = balance;
     bet = betAmt;
-
+    dbl = '';
     gameOver = dealerBust = userBust = false;
     deck = new Deck();
     userHand = [deck.deal(), deck.deal()];
@@ -26,14 +27,14 @@ function initGame (balance, betAmt) {
 function outputScore(userHand, dealerHand) {
     if (dealerHand.length == 1) {
         if(userBust){
-            return '\n**You | ' + userSum.toString() + ' (Bust)' + '**' + getEmojis(userHand) + '\n**Dealer | ' + dealerSum + '**' + getEmojis(dealerHand) + '<:back_of_card:963564621350989874>' + '\n\n';
+            return dbl + '\n**You | ' + userSum.toString() + ' (Bust)' + '**' + getEmojis(userHand) + '\n**Dealer | ' + dealerSum + '**' + getEmojis(dealerHand) + '<:back_of_card:963564621350989874>' + '\n\n';
         }
-        return '\n**You | ' + userSum.toString() + '**' + getEmojis(userHand) + '\n**Dealer | ' + dealerSum + '**' + getEmojis(dealerHand) + '<:back_of_card:963564621350989874>' + '\n\n';
+        return dbl + '\n**You | ' + userSum.toString() + '**' + getEmojis(userHand) + '\n**Dealer | ' + dealerSum + '**' + getEmojis(dealerHand) + '<:back_of_card:963564621350989874>' + '\n\n';
     }
     else if (dealerBust) {
-        return '\n**You | ' + userSum.toString() + '**' + getEmojis(userHand) + '\n**Dealer | ' + dealerSum + ' (Bust)' + '**' + getEmojis(dealerHand) + '\n\n';
+        return dbl + '\n**You | ' + userSum.toString() + '**' + getEmojis(userHand) + '\n**Dealer | ' + dealerSum + ' (Bust)' + '**' + getEmojis(dealerHand) + '\n\n';
     } else {
-        return '\n**You | ' + userSum.toString() + '**' + getEmojis(userHand) + '\n**Dealer | ' + dealerSum + '**' + getEmojis(dealerHand) + '\n\n';
+        return dbl + '\n**You | ' + userSum.toString() + '**' + getEmojis(userHand) + '\n**Dealer | ' + dealerSum + '**' + getEmojis(dealerHand) + '\n\n';
     }
 }
 
@@ -93,7 +94,13 @@ function userHit () {
     return outputScore(userHand, dealerHand);
 }
 
-
+function double () {
+    bet *= 2;
+    userHand.push(deck.deal());
+    userSum = getSum(userHand);
+    dbl = 'You doubled your bet.';
+    return stand();
+}
 
 function dealerHit () {
     while (dealerSum < 17) {
@@ -241,4 +248,4 @@ const emojiNames = {
 }
 
 
-module.exports = { initGame, userHit, stand, isGameOver, userSum, dealerSum, gameOver };
+module.exports = { initGame, userHit, stand, double, isGameOver, userSum, dealerSum, gameOver };
