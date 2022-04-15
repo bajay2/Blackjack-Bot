@@ -21,9 +21,10 @@ module.exports = {
                 client.query(`select balance from users where id = $1`,[interaction.user.id])
                     .then(res => {
                         if(res.rows == 0) {
-                            client.query('insert into users (id, balance) values ($1, 100)',
+                            client.query('insert into users (id, balance) values ($1, 1000)',
                             [interaction.user.id], (err, res) => {  
-                                greet = 'Welcome! You have been given a balance of 100 to play with.\n';
+                                greet = 'Welcome! You have been given a balance of 1000 to play with.\n';
+                                balance = 1000;
                                 client.release()
                                 game();
                             });
