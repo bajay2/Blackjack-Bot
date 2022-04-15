@@ -1,11 +1,8 @@
-//const Discord =  require('discord.js');
+var userID, gameOver, userBalance, bet, userHand, dealerHand, userSum, dealerSum, deck, userBust, dealerBust;
+var winnings = 0;
 
-var userID, gameOver, userBalance, bet, userHand, dealerHand, userSum, dealerSum, deck, winnings, userBust, dealerBust;
-
-
-function initGame (ID, balance, betAmt) {
-    userID = ID;
-    userBalance = balance;
+function initGame (balance, betAmt) {
+    bal = balance;
     bet = betAmt;
 
     gameOver = dealerBust = userBust = false;
@@ -20,7 +17,7 @@ function initGame (ID, balance, betAmt) {
     if (userSum == 21) {
         gameOver = true;
         winnings = Math.round(bet * 1.5);
-        return outputScore(userHand, dealerHand) + '**BLACKJACK** (Bet * 1.5)\nYou win: ' + winnings.toString() + '\nYou now have: ';
+        return [outputScore(userHand, dealerHand) + '**BLACKJACK** (Bet * 1.5)\nYou win: ' + winnings.toString() + '\nYou now have: ' + + (bal + winnings).toString(), bal + winnings];
     }
 
     return outputScore(userHand, dealerHand);
@@ -31,7 +28,7 @@ function outputScore(userHand, dealerHand) {
         if(userBust){
             return '\n**You | ' + userSum.toString() + ' (Bust)' + '**' + getEmojis(userHand) + '\n**Dealer | ' + dealerSum + '**' + getEmojis(dealerHand) + '<:back_of_card:963564621350989874>' + '\n\n';
         }
-        return '\n**You | ' + userSum.toString() + '**' + getEmojis(userHand) + '\n**Dealer | ' + dealerSum + '**' + getEmojis(dealerHand) + '<:back_of_card:963564621350989874>' + '\n\n';;
+        return '\n**You | ' + userSum.toString() + '**' + getEmojis(userHand) + '\n**Dealer | ' + dealerSum + '**' + getEmojis(dealerHand) + '<:back_of_card:963564621350989874>' + '\n\n';
     }
     else if (dealerBust) {
         return '\n**You | ' + userSum.toString() + '**' + getEmojis(userHand) + '\n**Dealer | ' + dealerSum + ' (Bust)' + '**' + getEmojis(dealerHand) + '\n\n';
@@ -84,14 +81,14 @@ function userHit () {
     if(userSum > 21) {
         gameOver = userBust = true;
         winnings = -bet;
-        return outputScore(userHand, dealerHand) + '**Loser**\nYou lost ' + bet.toString() + '\nYou now have: ';
+        return [outputScore(userHand, dealerHand) + '**Loser**\nYou lost ' + bet.toString() + '\nYou now have: ' + (bal + winnings).toString(), bal + winnings];
     } else if (userSum == 21 && userHand.length < 5) {
         let dealer = dealerHit()
         return outputScore(userHand, dealerHand) + dealer;
     } else if (userHand.length == 5) {
         gameOver = true;
         winnings = Math.round(bet * 1.5);
-        return outputScore(userHand, dealerHand) + '**5-CARD CHARLIE** (Bet * 1.5)\nYou win: ' + winnings.toString() + '\nYou now have: ';
+        return [outputScore(userHand, dealerHand) + '**5-CARD CHARLIE** (Bet * 1.5)\nYou win: ' + winnings.toString() + '\nYou now have: ' + (bal + winnings).toString(), bal + winnings];
     }
     return outputScore(userHand, dealerHand);
 }
@@ -110,7 +107,7 @@ function dealerHit () {
 
 function stand () {
     let dealer = dealerHit()
-    return outputScore(userHand, dealerHand) + dealer;
+    return [outputScore(userHand, dealerHand) + dealer[0], dealer[1]];
 }
 
 
@@ -145,16 +142,16 @@ function gameResults () {
     if (dealerSum > 21) {
         dealerBust = true;
         winnings = bet;
-        return '**WINNER** \nYou win: ' + winnings.toString() + '\nYou now have: ';
+        return ['**WINNER** \nYou win: ' + winnings.toString() + '\nYou now have: ' + (bal + winnings).toString(), bal + winnings];
     } else if (dealerSum > userSum) {
         winnings = -bet;
-        return '**Loser** \nYou lost: ' + bet.toString() + '\nYou now have: ';;
+        return ['**Loser** \nYou lost: ' + bet.toString() + '\nYou now have: ' + (bal + winnings).toString(), bal + winnings];
     } else if (dealerSum < userSum) {
         winnings = bet;
-        return '**WINNER** \nYou win: ' + winnings.toString() + '\nYou now have: ';
+        return ['**WINNER** \nYou win: ' + winnings.toString() + '\nYou now have: ' + (bal + winnings).toString(), bal + winnings];
     } else {
         winnings = 0;
-        return '**Push**\nYou win: 0\nYou now have: ';
+        return ['**Push**\nYou win: 0\nYou now have: ' + (bal + winnings).toString(), bal + winnings];
     }
 }
 

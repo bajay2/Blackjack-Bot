@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const { Client, Intents, Collection, MessageActionRow, MessageButton } = require('discord.js');
 const { token } = require('./config.json');
 const blackjack = require('./blackjack');
-var pool = require ('./db.js');
+var pool = require('./db.js');
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
@@ -13,14 +13,25 @@ for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.data.name, command);
 }
+client.login(token);
 
-client.once('ready', () => {
+
+client.on('ready', () => {
 	console.log('Ready!');
+	pool.connect( (err, client, done) => {
+		client.query('create table if not exists users( \
+			id text primary key, \
+			balance integer default 100)', (err, res) => {
+				done(err);
+		});
+	});
 });
 
 client.on('interactionCreate', async interaction => {
 	if (interaction.isCommand()) {
-
+		if(interaction.commandName == 'blackjack') {
+			
+		}
 		const command = client.commands.get(interaction.commandName);
 		
 		if (!command) return;
@@ -29,7 +40,7 @@ client.on('interactionCreate', async interaction => {
 			await command.execute(interaction);
 		} catch (error) {
 			console.error(error);
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });		
 		}
 	//TODO button interaction exclusivity
 	} else if (interaction.isButton()) {
@@ -49,7 +60,14 @@ client.on('interactionCreate', async interaction => {
 				if(!blackjack.isGameOver()) {
 					await interaction.update({ content: hit, components: [row] })
 				} else {
-					await interaction.update({ content: hit, components: []})
+					pool.connect()
+						.then((client) => {
+							client.query(`update users set balance=($1) where id=($2)`,[hit[1],interaction.user.id])
+						})
+						.catch(err => {
+							console.error(err);
+						});
+					await interaction.update({ content: hit[0], components: []})
 				}
 
 			} else if (interaction.customId.includes('stand')) {
@@ -64,11 +82,14 @@ client.on('interactionCreate', async interaction => {
 						.setLabel('Stand')
 						.setStyle('DANGER'),
 				);
-				if(!blackjack.isGameOver()) {
-					await interaction.update({ content: stand, components: [row] })
-				} else {
-					await interaction.update({ content: stand, components: [] })
-				}
+				pool.connect()
+						.then((client) => {
+							client.query(`update users set balance=($1) where id=($2)`,[stand[1],interaction.user.id])
+						})
+						.catch(err => {
+							console.error(err);
+						});
+				await interaction.update({ content: stand[0], components: [] })
 			}
 		}
 	}
@@ -76,4 +97,3 @@ client.on('interactionCreate', async interaction => {
 	
 });
 
-client.login(token);
