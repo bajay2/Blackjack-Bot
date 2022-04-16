@@ -31,6 +31,7 @@ module.exports = {
                         }else {
                             client.query('select balance from users where id = $1',
                             [interaction.user.id], (err, res) => {  
+                                greet = '';
                                 balance = res.rows[0].balance;
                                 client.release()
                                 game();

@@ -10,8 +10,12 @@ module.exports = {
                 .then((client) => {
                     client.query(`select balance from users where id = $1`,[interaction.user.id])
                         .then(res => {
-                            balance = res.rows[0].balance;
-                            interaction.reply({ content: 'Your balance is: ' + balance.toString(), components: [] });
+                            if(res.rows == 0){
+                                interaction.reply({ content: 'Use /blackjack to start an account and receive 100 credit: ', components: [] });
+                            } else {
+                                balance = res.rows[0].balance;
+                                interaction.reply({ content: 'Your balance is: ' + balance.toString(), components: [] });
+                            }
                         })
                         .catch(err => {
                             console.error(err);
