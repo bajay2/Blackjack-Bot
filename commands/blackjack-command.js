@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageActionRow, MessageButton } = require('discord.js');
 const blackjack = require('../blackjack');
 var pool = require ('../db.js');
-var balance;
+var balance, user;
 var greet = '';
 
 module.exports = {
@@ -47,6 +47,7 @@ module.exports = {
             });
         
         function game() {
+            user = interaction.user.id;
             const bet = interaction.options.getInteger('bet');
             if (bet > balance) {
                 interaction.reply({ content: 'Bet too large. Please lower your bet.'});

@@ -3,6 +3,7 @@ const { Client, Intents, Collection, MessageActionRow, MessageButton } = require
 const { token } = require('./config.json');
 const blackjack = require('./blackjack');
 var pool = require('./db.js');
+const blackjackCommand = require('./commands/blackjack-command');
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
@@ -41,6 +42,7 @@ client.on('interactionCreate', async interaction => {
 		}
 	//TODO button interaction exclusivity
 	} else if (interaction.isButton()) {
+		//if(interaction.user.id != blackjackCommand.user) return;
 		if (interaction.customId.includes('-button')) {	
 			if (interaction.customId.includes('hit')) {
 				let hit = blackjack.userHit();
