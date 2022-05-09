@@ -22,6 +22,8 @@ client.on('ready', () => {
 	pool.connect( (err, client, done) => {
 		client.query('create table if not exists users( \
 			id text primary key, \
+			wagered integer default 0, \
+			won integer default 0, \
 			balance integer default 100)', (err, res) => {
 				done(err);
 		});
@@ -75,6 +77,14 @@ client.on('interactionCreate', async interaction => {
 				pool.connect()
 						.then((client) => {
 							client.query(`update users set balance=($1) where id=($2)`,[stand[1],interaction.user.id])
+							if (stand[2] > 0){
+								client.query('select won from users where id = $1',
+                            	[interaction.user.id], (err, res) => {  
+                                	const winnings = res.rows[0].won + stand[2];
+									client.query(`update users set won=($1) where id=($2)`,[winnings, interaction.user.id])
+									//CHECK FOR RANK-UP HERE
+                            	});
+							}
 							client.release();
 						})
 						.catch(err => {
@@ -86,6 +96,15 @@ client.on('interactionCreate', async interaction => {
 				pool.connect()
 						.then((client) => {
 							client.query(`update users set balance=($1) where id=($2)`,[double[1],interaction.user.id])
+							if (double[2] > 0){
+								console.log(double[2]);
+								client.query('select won from users where id = $1',
+                            	[interaction.user.id], (err, res) => {  
+                                	const winnings = res.rows[0].won + double[2];
+									client.query(`update users set won=($1) where id=($2)`,[winnings, interaction.user.id])
+									//CHECK FOR RANK-UP HERE
+								});
+							}
 							client.release();
 						})
 						.catch(err => {

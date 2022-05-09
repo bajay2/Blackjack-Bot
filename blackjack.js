@@ -18,7 +18,7 @@ function initGame (balance, betAmt) {
     if (userSum == 21) {
         gameOver = true;
         winnings = Math.round(bet * 1.5);
-        return [outputScore(userHand, dealerHand) + '**BLACKJACK** (Bet * 1.5)\nYou win: ' + winnings.toString() + '\nYou now have: ' + + (bal + winnings).toString(), bal + winnings];
+        return [outputScore(userHand, dealerHand) + '**BLACKJACK** (Bet * 1.5)\nYou win: ' + winnings.toString() + '\nYou now have: ' + + (bal + winnings).toString(), bal + winnings, winnings];
     }
 
     return outputScore(userHand, dealerHand);
@@ -82,14 +82,14 @@ function userHit () {
     if(userSum > 21) {
         gameOver = userBust = true;
         winnings = -bet;
-        return [outputScore(userHand, dealerHand) + '**Loser**\nYou lost ' + bet.toString() + '\nYou now have: ' + (bal + winnings).toString(), bal + winnings];
+        return [outputScore(userHand, dealerHand) + '**Loser**\nYou lost ' + bet.toString() + '\nYou now have: ' + (bal + winnings).toString(), bal + winnings, winnings];
     } else if (userSum == 21 && userHand.length < 5) {
         let dealer = dealerHit()
         return outputScore(userHand, dealerHand) + dealer;
     } else if (userHand.length == 5) {
         gameOver = true;
         winnings = Math.round(bet * 1.5);
-        return [outputScore(userHand, dealerHand) + '**5-CARD CHARLIE** (Bet * 1.5)\nYou win: ' + winnings.toString() + '\nYou now have: ' + (bal + winnings).toString(), bal + winnings];
+        return [outputScore(userHand, dealerHand) + '**5-CARD CHARLIE** (Bet * 1.5)\nYou win: ' + winnings.toString() + '\nYou now have: ' + (bal + winnings).toString(), bal + winnings, winnings];
     }
     return outputScore(userHand, dealerHand);
 }
@@ -113,8 +113,8 @@ function dealerHit () {
 
 
 function stand () {
-    let dealer = dealerHit()
-    return [outputScore(userHand, dealerHand) + dealer[0], dealer[1]];
+    let dealer = dealerHit();
+    return [outputScore(userHand, dealerHand) + dealer[0], dealer[1], dealer[2]];
 }
 
 
@@ -149,16 +149,16 @@ function gameResults () {
     if (dealerSum > 21) {
         dealerBust = true;
         winnings = bet;
-        return ['**WINNER** \nYou win: ' + winnings.toString() + '\nYou now have: ' + (bal + winnings).toString(), bal + winnings];
+        return ['**WINNER** \nYou win: ' + winnings.toString() + '\nYou now have: ' + (bal + winnings).toString(), bal + winnings, winnings];
     } else if (dealerSum > userSum) {
         winnings = -bet;
-        return ['**Loser** \nYou lost: ' + bet.toString() + '\nYou now have: ' + (bal + winnings).toString(), bal + winnings];
+        return ['**Loser** \nYou lost: ' + bet.toString() + '\nYou now have: ' + (bal + winnings).toString(), bal + winnings, winnings];
     } else if (dealerSum < userSum) {
         winnings = bet;
-        return ['**WINNER** \nYou win: ' + winnings.toString() + '\nYou now have: ' + (bal + winnings).toString(), bal + winnings];
+        return ['**WINNER** \nYou win: ' + winnings.toString() + '\nYou now have: ' + (bal + winnings).toString(), bal + winnings, winnings];
     } else {
         winnings = 0;
-        return ['**Push**\nYou win: 0\nYou now have: ' + (bal + winnings).toString(), bal + winnings];
+        return ['**Push**\nYou win: 0\nYou now have: ' + (bal + winnings).toString(), bal + winnings, winnings];
     }
 }
 
